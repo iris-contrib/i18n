@@ -1,4 +1,5 @@
 // Copyright 2013 Unknwon
+// Copyright 2017 Gerasimos (Makis) Maropoulos <https://github.com/@kataras>
 //
 // Licensed under the Apache License, Version 2.0 (the "License"): you may
 // not use this file except in compliance with the License. You may obtain
@@ -25,7 +26,8 @@ import (
 )
 
 var (
-	ErrLangAlreadyExist = errors.New("Lang already exists")
+	// ErrLangAlreadyExist throwed when language is already exists.
+	ErrLangAlreadyExist = errors.New("lang already exists")
 
 	locales = &localeStore{store: make(map[string]*locale)}
 )
@@ -124,6 +126,28 @@ func ListLangDescs() []string {
 func IsExist(lang string) bool {
 	_, ok := locales.store[lang]
 	return ok
+}
+
+// IsExistSimilar returns true if the language, or something similar
+// exists (e.g. en-US maps to en).
+// it returns the found name and whether it was able to match something.
+// - PATCH by @j-lenoch.
+func IsExistSimilar(lang string) (string, bool) {
+	_, ok := locales.store[lang]
+	if ok {
+		return lang, true
+	}
+
+	// remove the internationalization element from the IETF code
+	code := strings.Split(lang, "-")[0]
+
+	for _, lc := range locales.store {
+		if strings.Contains(lc.lang, code) {
+			return lc.lang, true
+		}
+	}
+
+	return "", false
 }
 
 // IndexLang returns index of language locale,
