@@ -35,4 +35,7 @@ for _, lc := range locales.store {
 
 return "", false
 }
+
+A full Patch by @kataras to support multi languages, look the `localeFiles` new type
+and the `GetKey, Reload` and improvement of `locales.Add` and more.
 ```
